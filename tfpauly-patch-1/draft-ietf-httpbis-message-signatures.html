@@ -1795,7 +1795,7 @@ to specify data types: List, Inner List, Dictionary, Item, String, Integer, Byte
 <a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-http-fields" class="section-name selfRef">HTTP Fields</a>
         </h3>
 <p id="section-2.1-1">The component name for an HTTP field is the lowercased form of its field name as defined in <span><a href="https://rfc-editor.org/rfc/rfc9110#section-5.1" class="relref">Section 5.1</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span>. While HTTP field names are case-insensitive, implementations <span class="bcp14">MUST</span> use lowercased field names (e.g., <code>content-type</code>, <code>date</code>, <code>etag</code>) when using them as component names.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
-<p id="section-2.1-2">The component value for an HTTP field is the field value for the named field as defined in <span><a href="https://rfc-editor.org/rfc/rfc9110#section-5.5" class="relref">Section 5.5</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span>. The field value <span class="bcp14">MUST</span> be taken from the named header field of the target message unless this behavior is overridden by additional parameters and rules, such as the <code>req</code> and <code>tr</code> flags, below. For most fields, the field value is an ASCII string as recommended by <span>[<a href="#HTTP" class="cite xref">HTTP</a>]</span>, and the component value is exactly that string. Other encodings could exist in some implementations, and any characters outside the ASCII range <span class="bcp14">MUST</span> be encoded using the percent-encoding mechanism defined in <span><a href="https://rfc-editor.org/rfc/rfc3986#section-2.1" class="relref">Section 2.1</a> of [<a href="#URI" class="cite xref">URI</a>]</span>.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
+<p id="section-2.1-2">The component value for an HTTP field is the field value for the named field as defined in <span><a href="https://rfc-editor.org/rfc/rfc9110#section-5.5" class="relref">Section 5.5</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span>. The field value <span class="bcp14">MUST</span> be taken from the named header field of the target message unless this behavior is overridden by additional parameters and rules, such as the <code>req</code> and <code>tr</code> flags, below. For most fields, the field value is an ASCII string as recommended by <span>[<a href="#HTTP" class="cite xref">HTTP</a>]</span>, and the component value is exactly that string. Other encodings could exist in some implementations, and all non-ASCII field values <span class="bcp14">MUST</span> be encoded to ASCII before being added to the signature base. The <code>bs</code> parameter defined in <a href="#http-field-byte-sequence" class="auto internal xref">Section 2.1.3</a> provides a method for wrapping such problematic field values.<a href="#section-2.1-2" class="pilcrow">¶</a></p>
 <p id="section-2.1-3">Unless overridden by additional parameters and rules, HTTP field values <span class="bcp14">MUST</span> be combined into a single value as defined in <span><a href="https://rfc-editor.org/rfc/rfc9110#section-5.2" class="relref">Section 5.2</a> of [<a href="#HTTP" class="cite xref">HTTP</a>]</span> to create the component value. Specifically, HTTP fields sent as multiple fields <span class="bcp14">MUST</span> be combined using a single comma (",") and a single space (" ") between each item. Note that intermediaries are allowed to combine values of HTTP fields with any amount of whitespace between the commas, and if this behavior is not accounted for by the verifier, the signature can fail since the signer and verifier will see a different component value in their respective signature bases. For robustness, it is <span class="bcp14">RECOMMENDED</span> that signed messages include only a single instance of any field covered under the signature, particularly with the value for any list-based fields serialized using the algorithm below. This approach increases the chances of the field value remaining untouched through intermediaries. Where that approach is not possible and multiple instances of a field need to be sent separately, it is <span class="bcp14">RECOMMENDED</span> that signers and verifiers process any list-based fields taking all individual field values and combining them based on the strict algorithm below, to counter possible intermediary behavior. When the field in question is a structured field of type List or Dictionary, this effect can be accomplished more directly by requiring the strict structured field serialization of the field value, as described in <a href="#http-field-structured" class="auto internal xref">Section 2.1.1</a>.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
 <p id="section-2.1-4">Note that some HTTP fields, such as Set-Cookie (<span>[<a href="#COOKIE" class="cite xref">COOKIE</a>]</span>), do not follow a syntax that allows for combination of field values in this manner (such that the combined output is unambiguous from multiple inputs). Even though the component value is never parsed by the message signature process and used only as part of the signature base in <a href="#create-sig-input" class="auto internal xref">Section 2.5</a>, caution needs to be taken when including such fields in signatures since the combined value could be ambiguous. The <code>bs</code> parameter defined in <a href="#http-field-byte-sequence" class="auto internal xref">Section 2.1.3</a> provides a method for wrapping such problematic fields. See <a href="#security-non-list" class="auto internal xref">Section 7.5.6</a> for more discussion of this issue.<a href="#section-2.1-4" class="pilcrow">¶</a></p>
 <p id="section-2.1-5">If the correctly combined value is not directly available for a given field by an implementation, the following algorithm will produce canonicalized results for list-based fields:<a href="#section-2.1-5" class="pilcrow">¶</a></p>
@@ -1876,7 +1876,7 @@ of the structured field value (<a href="#http-field-structured" class="auto inte
 </dd>
         <dd class="break"></dd>
 </dl>
-<p id="section-2.1-19">Multiple parameters <span class="bcp14">MAY</span> be specified together, though some combinations are redundant or incompatible. For example, the <code>sf</code> parameter's functionality is already covered when the <code>key</code> parameter is used on a dictionary item, since <code>key</code> requires strict serialization of the value. The <code>bs</code> parameter, which requires the raw field values from the message, is not compatible with use of the <code>sf</code> or <code>key</code> parameters, which require the parsed data structures of the field values after combination.<a href="#section-2.1-19" class="pilcrow">¶</a></p>
+<p id="section-2.1-19">Multiple parameters <span class="bcp14">MAY</span> be specified together, though some combinations are redundant or incompatible. For example, the <code>sf</code> parameter's functionality is already covered when the <code>key</code> parameter is used on a dictionary item, since <code>key</code> requires strict serialization of the value. The <code>bs</code> parameter, which requires the raw bytes of the field values from the message, is not compatible with use of the <code>sf</code> or <code>key</code> parameters, which require the parsed data structures of the field values after combination.<a href="#section-2.1-19" class="pilcrow">¶</a></p>
 <p id="section-2.1-20">Additional parameters can be defined in the HTTP Signature Component Parameters registry established in <a href="#component-param-registry" class="auto internal xref">Section 6.5</a>.<a href="#section-2.1-20" class="pilcrow">¶</a></p>
 <div id="http-field-structured">
 <section id="section-2.1.1">
@@ -2117,7 +2117,7 @@ Expires: Wed, 9 Nov 2022 07:28:00 GMT
           <h4 id="name-method">
 <a href="#section-2.2.1" class="section-number selfRef">2.2.1. </a><a href="#name-method" class="section-name selfRef">Method</a>
           </h4>
-<p id="section-2.2.1-1">The <code>@method</code> derived component refers to the HTTP method of a request message. The component value is canonicalized by taking the value of the method as a string. Note that the method name is case-sensitive as per <span>[<a href="#HTTP" class="cite xref">HTTP</a>], <a href="https://rfc-editor.org/rfc/rfc9110#section-9.1" class="relref">Section 9.1</a></span>. While conventionally standardized method names are uppercase US-ASCII (<span>[<a href="#STD80" class="cite xref">STD80</a>]</span>), no transformation to the input method value's case is performed.<a href="#section-2.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.2.1-1">The <code>@method</code> derived component refers to the HTTP method of a request message. The component value is canonicalized by taking the value of the method as a string. Note that the method name is case-sensitive as per <span>[<a href="#HTTP" class="cite xref">HTTP</a>], <a href="https://rfc-editor.org/rfc/rfc9110#section-9.1" class="relref">Section 9.1</a></span>. While conventionally standardized method names are uppercase <span>[<a href="#ASCII" class="cite xref">ASCII</a>]</span>, no transformation to the input method value's case is performed.<a href="#section-2.2.1-1" class="pilcrow">¶</a></p>
 <p id="section-2.2.1-2">For example, the following request message:<a href="#section-2.2.1-2" class="pilcrow">¶</a></p>
 <div class="lang-http-message sourcecode" id="section-2.2.1-3">
 <pre>
@@ -2405,20 +2405,21 @@ Host: www.example.com
           </h4>
 <p id="section-2.2.8-1">If a request target URI uses HTML form parameters in the query string as defined in the "application/x-www-form-urlencoded" section of <span>[<a href="#HTMLURL" class="cite xref">HTMLURL</a>]</span>,
 the <code>@query-param</code> derived component allows addressing of individual query parameters. The query parameters <span class="bcp14">MUST</span> be parsed according to the "application/x-www-form-urlencoded parsing" section of <span>[<a href="#HTMLURL" class="cite xref">HTMLURL</a>]</span>, resulting in a list of (<code>nameString</code>, <code>valueString</code>) tuples.
-The <span class="bcp14">REQUIRED</span> <code>name</code> parameter of each component identifier contains the <code>nameString</code> of a single query parameter as a String value.
+The <span class="bcp14">REQUIRED</span> <code>name</code> parameter of each component identifier contains the encoded <code>nameString</code> of a single query parameter as a String value.
+The component value of a single named parameter is the encoded <code>valueString</code> of that single query parameter.
 Several different named query parameters <span class="bcp14">MAY</span> be included in the covered components.
-Single named parameters <span class="bcp14">MAY</span> occur in any order in the covered components.<a href="#section-2.2.8-1" class="pilcrow">¶</a></p>
-<p id="section-2.2.8-2">The component value of a single named parameter is calculated by the following process:<a href="#section-2.2.8-2" class="pilcrow">¶</a></p>
+Single named parameters <span class="bcp14">MAY</span> occur in any order in the covered components, regardless of the order they occur in the query string.<a href="#section-2.2.8-1" class="pilcrow">¶</a></p>
+<p id="section-2.2.8-2">The value of the <code>name</code> parameter and the component value of a single named parameter are calculated by the following process:<a href="#section-2.2.8-2" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-2.2.8-3">
-<li id="section-2.2.8-3.1">Parse the <code>valueString</code> of the named query parameter defined by the "application/x-www-form-urlencoded parsing" section of <span>[<a href="#HTMLURL" class="cite xref">HTMLURL</a>]</span>, which is the value after percent-encoded octets are decoded<a href="#section-2.2.8-3.1" class="pilcrow">¶</a>
+<li id="section-2.2.8-3.1">Parse the <code>nameString</code> or <code>valueString</code> of the named query parameter defined by the "application/x-www-form-urlencoded parsing" section of <span>[<a href="#HTMLURL" class="cite xref">HTMLURL</a>]</span>, which is the value after percent-encoded octets are decoded.<a href="#section-2.2.8-3.1" class="pilcrow">¶</a>
 </li>
-            <li id="section-2.2.8-3.2">Encode the <code>valueString</code> using the "percent-encode after encoding" process defined by the "application/x-www-form-urlencoded serializing" section of <span>[<a href="#HTMLURL" class="cite xref">HTMLURL</a>]</span>, which results in an ASCII string<a href="#section-2.2.8-3.2" class="pilcrow">¶</a>
+            <li id="section-2.2.8-3.2">Encode the <code>nameString</code> or <code>valueString</code> using the "percent-encode after encoding" process defined by the "application/x-www-form-urlencoded serializing" section of <span>[<a href="#HTMLURL" class="cite xref">HTMLURL</a>]</span>, which results in an <span>[<a href="#ASCII" class="cite xref">ASCII</a>]</span> string.<a href="#section-2.2.8-3.2" class="pilcrow">¶</a>
 </li>
-            <li id="section-2.2.8-3.3">This ASCII string is the component value<a href="#section-2.2.8-3.3" class="pilcrow">¶</a>
+            <li id="section-2.2.8-3.3">Output the ASCII string,<a href="#section-2.2.8-3.3" class="pilcrow">¶</a>
 </li>
           </ol>
-<p id="section-2.2.8-4">Note that this value does not include any leading <code>?</code> characters, equals sign <code>=</code>, or separating <code>&amp;</code> characters.
-Named query parameters with an empty <code>valueString</code> have an empty string as the component value.<a href="#section-2.2.8-4" class="pilcrow">¶</a></p>
+<p id="section-2.2.8-4">Note that the component value does not include any leading <code>?</code> characters, equals sign <code>=</code>, or separating <code>&amp;</code> characters.
+Named query parameters with an empty <code>valueString</code> have an empty string as the component value. Note that due to inconsistencies in implementations, some query parameter parsing libraries drop such empty values.<a href="#section-2.2.8-4" class="pilcrow">¶</a></p>
 <p id="section-2.2.8-5">If a query parameter is named as a covered component but it does not occur in the query parameters, this <span class="bcp14">MUST</span> cause an error in the signature base generation.<a href="#section-2.2.8-5" class="pilcrow">¶</a></p>
 <p id="section-2.2.8-6">For example for the following request:<a href="#section-2.2.8-6" class="pilcrow">¶</a></p>
 <div class="lang-http-message sourcecode" id="section-2.2.8-7">
@@ -2447,7 +2448,7 @@ Additionally, multiple instances of a named parameter are not reliably supported
 NOTE: '\' line wrapping per RFC 8792
 
 GET /parameters?var=this%20is%20a%20big%0Amultiline%20value&amp;\
-  bar=with+plus+whitespace HTTP/1.1
+  bar=with+plus+whitespace&amp;fa%C3%A7ade%22%3A%20=something HTTP/1.1
 Host: www.example.com
 Date: Tue, 20 Apr 2021 02:07:56 GMT
 </pre><a href="#section-2.2.8-16" class="pilcrow">¶</a>
@@ -2457,17 +2458,19 @@ Date: Tue, 20 Apr 2021 02:07:56 GMT
 <pre>
 "@query-param";name="var": this%20is%20a%20big%0Amultiline%20value
 "@query-param";name="bar": with%20plus%20whitespace
+"@query-param";name="fa%C3%A7ade%22%3A%20": something
 </pre><a href="#section-2.2.8-18" class="pilcrow">¶</a>
 </div>
-<p id="section-2.2.8-19">If the encoding were not applied, the resultant value would be:<a href="#section-2.2.8-19" class="pilcrow">¶</a></p>
+<p id="section-2.2.8-19">If the encoding were not applied, the resultant values would be:<a href="#section-2.2.8-19" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-2.2.8-20">
 <pre>
 "@query-param";name="var": this is a big
 multiline value
 "@query-param";name="bar": with plus whitespace
+"@query-param";name="façade\": ": something
 </pre><a href="#section-2.2.8-20" class="pilcrow">¶</a>
 </div>
-<p id="section-2.2.8-21">This base string violates the constraints on component values, and is therefore invalid.<a href="#section-2.2.8-21" class="pilcrow">¶</a></p>
+<p id="section-2.2.8-21">This base string contains characters that violate the constraints on component names and values, and is therefore invalid.<a href="#section-2.2.8-21" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="content-status-code">
@@ -2731,7 +2734,7 @@ Signature: reqres=:zU7zd1MN56WapeNxfVNleCx5rFxBhBcZngnX4d+MurOk3tNu\
         <h3 id="name-creating-the-signature-base">
 <a href="#section-2.5" class="section-number selfRef">2.5. </a><a href="#name-creating-the-signature-base" class="section-name selfRef">Creating the Signature Base</a>
         </h3>
-<p id="section-2.5-1">The signature base is a US-ASCII (<span>[<a href="#STD80" class="cite xref">STD80</a>]</span>) string containing the canonicalized HTTP message components covered by the signature. The input to the signature base creation algorithm is the ordered set of covered component identifiers and their associated values, along with any additional signature parameters discussed in <a href="#signature-params" class="auto internal xref">Section 2.3</a>.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
+<p id="section-2.5-1">The signature base is a <span>[<a href="#ASCII" class="cite xref">ASCII</a>]</span> string containing the canonicalized HTTP message components covered by the signature. The input to the signature base creation algorithm is the ordered set of covered component identifiers and their associated values, along with any additional signature parameters discussed in <a href="#signature-params" class="auto internal xref">Section 2.3</a>.<a href="#section-2.5-1" class="pilcrow">¶</a></p>
 <p id="section-2.5-2">Component identifiers are serialized using the strict serialization rules defined by <span>[<a href="#STRUCTURED-FIELDS" class="cite xref">STRUCTURED-FIELDS</a>], <a href="https://rfc-editor.org/rfc/rfc8941#section-4" class="relref">Section 4</a></span>.
 The component identifier has a component name, which is a String Item value serialized using the <code>sf-string</code> ABNF rule. The component identifier <span class="bcp14">MAY</span> also include defined parameters which are serialized using the <code>parameters</code> ABNF rule. The signature parameters line defined in <a href="#signature-params" class="auto internal xref">Section 2.3</a> follows this same pattern, but the component identifier is a String Item with a fixed value and no parameters, and the component value is always an Inner List with optional parameters.<a href="#section-2.5-2" class="pilcrow">¶</a></p>
 <p id="section-2.5-3">Note that this means the serialization of the component name itself is encased in double quotes, with parameters following as a semicolon-separated list, such as <code>"cache-control"</code>, <code>"@authority"</code>, <code>"@signature-params"</code>, or <code>"example-dictionary";key="foo"</code>.<a href="#section-2.5-3" class="pilcrow">¶</a></p>
@@ -2800,7 +2803,7 @@ signature-params-line = DQUOTE "@signature-params" DQUOTE
 </li>
             </ol>
 </li>
-          <li id="section-2.5-7.4">Produce an error if the output string contains any non-ASCII (<span>[<a href="#STD80" class="cite xref">STD80</a>]</span>) characters.<a href="#section-2.5-7.4" class="pilcrow">¶</a>
+          <li id="section-2.5-7.4">Produce an error if the output string contains any non-ASCII (<span>[<a href="#ASCII" class="cite xref">ASCII</a>]</span>) characters.<a href="#section-2.5-7.4" class="pilcrow">¶</a>
 </li>
           <li id="section-2.5-7.5">Return the output string.<a href="#section-2.5-7.5" class="pilcrow">¶</a>
 </li>
@@ -4502,6 +4505,10 @@ Example-Header: value, with, lots, of, commas
         <dd>
 <span class="refAuthor">Crocker, D., Ed.</span> and <span class="refAuthor">P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5234">https://www.rfc-editor.org/rfc/rfc5234</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="ASCII">[ASCII]</dt>
+        <dd>
+<span class="refAuthor">Cerf, V.</span>, <span class="refTitle">"ASCII format for network interchange"</span>, <span class="seriesInfo">STD 80</span>, <span class="seriesInfo">RFC 20</span>, <span class="seriesInfo">DOI 10.17487/RFC0020</span>, <time datetime="1969-10" class="refDate">October 1969</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc20">https://www.rfc-editor.org/rfc/rfc20</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="FIPS186-4">[FIPS186-4]</dt>
         <dd>
 <span class="refTitle">"Digital Signature Standard (DSS)"</span>, <time datetime="2013" class="refDate">2013</time>, <span>&lt;<a href="https://csrc.nist.gov/publications/detail/fips/186/4/final">https://csrc.nist.gov/publications/detail/fips/186/4/final</a>&gt;</span>. </dd>
@@ -4553,12 +4560,6 @@ Example-Header: value, with, lots, of, commas
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="STD80">[STD80]</dt>
-        <dd>
-<div class="refInstance" id="RFC0020">
-            <span class="refAuthor">Cerf, V.</span>, <span class="refTitle">"ASCII format for network interchange"</span>, <span class="seriesInfo">STD 80</span>, <span class="seriesInfo">RFC 20</span>, <time datetime="1969-10" class="refDate">October 1969</time>. </div>
-</dd>
 <dd class="break"></dd>
 <dt id="STRUCTURED-FIELDS">[STRUCTURED-FIELDS]</dt>
         <dd>

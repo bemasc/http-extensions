@@ -1597,11 +1597,11 @@ request).<a href="#section-2.3-2" class="pilcrow">¶</a></p>
 only if they are equivalent under the i;ascii-casemap collation defined in
 <span>[<a href="#RFC4790" class="cite xref">RFC4790</a>]</span>.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
 <p id="section-2.3-5">The term string means a sequence of non-NUL octets.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
-<p id="section-2.3-6">The terms "active document", "ancestor browsing context", "browsing context",
-"dedicated worker", "Document", "nested browsing context", "opaque origin",
-"parent browsing context", "sandboxed origin browsing context flag", "shared
-worker", "the worker's Documents", "top-level browsing context", and
-"WorkerGlobalScope" are defined in <span>[<a href="#HTML" class="cite xref">HTML</a>]</span>.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+<p id="section-2.3-6">The terms "active browsing context", "active document", "ancestor navigables",
+"container document", "content navigable", "dedicated worker", "Document",
+"inclusive ancestor navigables", "navigable", "opaque origin", "sandboxed
+origin browsing context flag", "shared worker", "the worker's Documents",
+"top-level traversable", and "WorkerGlobalScope" are defined in <span>[<a href="#HTML" class="cite xref">HTML</a>]</span>.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
 <p id="section-2.3-7">"Service Workers" are defined in the Service Workers specification
 <span>[<a href="#SERVICE-WORKERS" class="cite xref">SERVICE-WORKERS</a>]</span>.<a href="#section-2.3-7" class="pilcrow">¶</a></p>
 <p id="section-2.3-8">The term "origin", the mechanism of deriving an origin from a URI, and the "the
@@ -1619,6 +1619,8 @@ project at <span>[<a href="#PSL" class="cite xref">PSL</a>]</span>.<a href="#sec
 "target browsing context", and "url list", are defined in <span>[<a href="#FETCH" class="cite xref">FETCH</a>]</span>.<a href="#section-2.3-11" class="pilcrow">¶</a></p>
 <p id="section-2.3-12">The term "non-HTTP APIs" refers to non-HTTP mechanisms used to set and retrieve
 cookies, such as a web browser API that exposes cookies to scripts.<a href="#section-2.3-12" class="pilcrow">¶</a></p>
+<p id="section-2.3-13">The term "top-level navigation" refers to a navigation of a top-level
+traversable.<a href="#section-2.3-13" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2452,29 +2454,29 @@ client's type, as described in the following subsections:<a href="#section-5.2-4
 directly exposed to users, and therefore the only signal users can reasonably
 rely upon to determine whether or not they trust a particular website. The
 origin of that URI represents the context in which a user most likely believes
-themselves to be interacting. We'll define this origin, the top-level browsing
-context's active document's origin, as the "top-level origin".<a href="#section-5.2.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.2.1-2">For a document displayed in a top-level browsing context, we can stop here: the
+themselves to be interacting. We'll define this origin, the top-level
+traversable's active document's origin, as the "top-level origin".<a href="#section-5.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.2.1-2">For a document displayed in a top-level traversable, we can stop here: the
 document's "site for cookies" is the top-level origin.<a href="#section-5.2.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.2.1-3">For documents which are displayed in nested browsing contexts, we need to audit
-the origins of each of a document's ancestor browsing contexts' active documents
-in order to account for the "multiple-nested scenarios" described in Section 4
-of <span>[<a href="#RFC7034" class="cite xref">RFC7034</a>]</span>. A document's "site for cookies" is the top-level origin if and
-only if the top-level origin is same-site with the document's origin, and with
-each of the document's ancestor documents' origins. Otherwise its "site for
-cookies" is an origin set to an opaque origin.<a href="#section-5.2.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.2.1-3">For container documents, we need to audit the origins of each of a document's
+ancestor navigables' active documents in order to account for the
+"multiple-nested scenarios" described in Section 4 of <span>[<a href="#RFC7034" class="cite xref">RFC7034</a>]</span>. A document's
+"site for cookies" is the top-level origin if and only if the top-level origin
+is same-site with the document's origin, and with each of the document's
+ancestor documents' origins. Otherwise its "site for cookies" is an origin set
+to an opaque origin.<a href="#section-5.2.1-3" class="pilcrow">¶</a></p>
 <p id="section-5.2.1-4">Given a Document (<code>document</code>), the following algorithm returns its "site for
 cookies":<a href="#section-5.2.1-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.2.1-5">
-<li id="section-5.2.1-5.1">Let <code>top-document</code> be the active document in <code>document</code>'s browsing context's
-top-level browsing context.<a href="#section-5.2.1-5.1" class="pilcrow">¶</a>
+<li id="section-5.2.1-5.1">Let <code>top-document</code> be the active document in <code>document</code>'s navigable's
+top-level traversable.<a href="#section-5.2.1-5.1" class="pilcrow">¶</a>
 </li>
             <li id="section-5.2.1-5.2">Let <code>top-origin</code> be the origin of <code>top-document</code>'s URI if <code>top-document</code>'s
 sandboxed origin browsing context flag is set, and <code>top-document</code>'s origin
 otherwise.<a href="#section-5.2.1-5.2" class="pilcrow">¶</a>
 </li>
-            <li id="section-5.2.1-5.3">Let <code>documents</code> be a list containing <code>document</code> and each of <code>document</code>'s
-ancestor browsing contexts' active documents.<a href="#section-5.2.1-5.3" class="pilcrow">¶</a>
+            <li id="section-5.2.1-5.3">Let <code>documents</code> be a list consisting of the active documents of
+<code>document</code>'s inclusive ancestor navigables.<a href="#section-5.2.1-5.3" class="pilcrow">¶</a>
 </li>
             <li id="section-5.2.1-5.4">
               <p id="section-5.2.1-5.4.1">For each <code>item</code> in <code>documents</code>:<a href="#section-5.2.1-5.4.1" class="pilcrow">¶</a></p>
@@ -2490,6 +2492,8 @@ an opaque origin.<a href="#section-5.2.1-5.4.2.2" class="pilcrow">¶</a>
             <li id="section-5.2.1-5.5">Return <code>top-origin</code>.<a href="#section-5.2.1-5.5" class="pilcrow">¶</a>
 </li>
           </ol>
+<p id="section-5.2.1-6">Note: This algorithm only applies when the entire chain of documents from
+<code>top-document</code> to <code>document</code> are all active.<a href="#section-5.2.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="worker-requests">
@@ -2498,7 +2502,7 @@ an opaque origin.<a href="#section-5.2.1-5.4.2.2" class="pilcrow">¶</a>
 <a href="#section-5.2.2" class="section-number selfRef">5.2.2. </a><a href="#name-worker-based-requests" class="section-name selfRef">Worker-based requests</a>
           </h4>
 <p id="section-5.2.2-1">Worker-driven requests aren't as clear-cut as document-driven requests, as
-there isn't a clear link between a top-level browsing context and a worker.
+there isn't a clear link between a top-level traversable and a worker.
 This is especially true for Service Workers <span>[<a href="#SERVICE-WORKERS" class="cite xref">SERVICE-WORKERS</a>]</span>, which may
 execute code in the background, without any document visible at all.<a href="#section-5.2.2-1" class="pilcrow">¶</a></p>
 <p id="section-5.2.2-2">Note: The descriptions below assume that workers must be same-origin with
@@ -3203,7 +3207,7 @@ Otherwise, set the cookie's same-site-flag to "Default".<a href="#section-5.6-3.
             <p id="section-5.6-3.18.1">If the cookie's <code>same-site-flag</code> is not "None":<a href="#section-5.6-3.18.1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.6-3.18.2">
 <li id="section-5.6-3.18.2.1">If the cookie was received from a "non-HTTP" API, and the API was called
-from a browsing context's active document whose "site for cookies" is
+from a navigable's active document whose "site for cookies" is
 not same-site with the top-level origin, then abort these steps and
 ignore the newly created cookie entirely.<a href="#section-5.6-3.18.2.1" class="pilcrow">¶</a>
 </li>
@@ -3213,10 +3217,10 @@ processing the cookie.<a href="#section-5.6-3.18.2.2" class="pilcrow">¶</a>
 </li>
               <li id="section-5.6-3.18.2.3">
                 <p id="section-5.6-3.18.2.3.1">If the cookie was received from a request which is navigating a
-top-level browsing context <span>[<a href="#HTML" class="cite xref">HTML</a>]</span> (e.g. if the request's "reserved
+top-level traversable <span>[<a href="#HTML" class="cite xref">HTML</a>]</span> (e.g. if the request's "reserved
 client" is either <code>null</code> or an environment whose "target browsing
-context" is a top-level browing context), skip the remaining substeps
-and continue processing the cookie.<a href="#section-5.6-3.18.2.3.1" class="pilcrow">¶</a></p>
+context"'s navigable is a top-level traversable), skip the remaining
+substeps and continue processing the cookie.<a href="#section-5.6-3.18.2.3.1" class="pilcrow">¶</a></p>
 <p id="section-5.6-3.18.2.3.2">
 Note: Top-level navigations can create a cookie with any <code>SameSite</code>
 value, even if the new cookie wouldn't have been sent along with
@@ -3424,7 +3428,7 @@ following conditions are met:<a href="#section-5.7.3-2.1.2.5.1" class="pilcrow">
                     <li class="normal" id="section-5.7.3-2.1.2.5.2.3">The HTTP request associated with the retrieval uses a "safe" method.<a href="#section-5.7.3-2.1.2.5.2.3" class="pilcrow">¶</a>
 </li>
                     <li class="normal" id="section-5.7.3-2.1.2.5.2.4">The target browsing context of the HTTP request associated with the
-retrieval is a top-level browsing context.<a href="#section-5.7.3-2.1.2.5.2.4" class="pilcrow">¶</a>
+retrieval is the active browsing context or a top-level traversable.<a href="#section-5.7.3-2.1.2.5.2.4" class="pilcrow">¶</a>
 </li>
                   </ul>
 </li>
@@ -3938,7 +3942,7 @@ and/or socket pooling between same-site and cross-site requests).<a href="#secti
 refresh button on a toolbar) are same-site only if the reloaded document was
 originally navigated to via a same-site request. This differs from the handling
 of other reload navigations, which are always same-site if top-level, since the
-source browsing context's active document is precisely the document being
+source navigable's active document is precisely the document being
 reloaded.<a href="#section-8.8.5-1" class="pilcrow">¶</a></p>
 <p id="section-8.8.5-2">This special handling of reloads triggered through a user interface element
 avoids sending <code>SameSite</code> cookies on user-initiated reloads if they were
@@ -4612,9 +4616,6 @@ user interface elements:
           <li class="normal" id="appendix-A.12-1.10">Prevent nameless cookies with prefixed values
 <a href="https://github.com/httpwg/http-extensions/pull/2251">https://github.com/httpwg/http-extensions/pull/2251</a><a href="#appendix-A.12-1.10" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="appendix-A.12-1.11">Advise the reader which section to implement
-<a href="https://github.com/httpwg/http-extensions/pull/2478">https://github.com/httpwg/http-extensions/pull/2478</a><a href="#appendix-A.12-1.11" class="pilcrow">¶</a>
-</li>
         </ul>
 </section>
 </div>
@@ -4624,7 +4625,14 @@ user interface elements:
 <a href="#appendix-A.13" class="section-number selfRef">A.13. </a><a href="#name-draft-ietf-httpbis-rfc6265bis-12" class="section-name selfRef">draft-ietf-httpbis-rfc6265bis-12</a>
         </h3>
 <ul class="normal">
-<li class="normal" id="appendix-A.13-1.1">None. Yet!<a href="#appendix-A.13-1.1" class="pilcrow">¶</a>
+<li class="normal" id="appendix-A.13-1.1">Advise the reader which section to implement
+<a href="https://github.com/httpwg/http-extensions/pull/2478">https://github.com/httpwg/http-extensions/pull/2478</a><a href="#appendix-A.13-1.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="appendix-A.13-1.2">Define top-level navigation
+<a href="https://github.com/httpwg/http-extensions/pull/2481">https://github.com/httpwg/http-extensions/pull/2481</a><a href="#appendix-A.13-1.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="appendix-A.13-1.3">Use navigables concept
+<a href="https://github.com/httpwg/http-extensions/pull/2478">https://github.com/httpwg/http-extensions/pull/2478</a><a href="#appendix-A.13-1.3" class="pilcrow">¶</a>
 </li>
         </ul>
 </section>

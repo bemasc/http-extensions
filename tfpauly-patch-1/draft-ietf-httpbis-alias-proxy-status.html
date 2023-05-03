@@ -1324,9 +1324,16 @@ names.<a href="#section-3-2" class="pilcrow">¶</a></p>
       </h2>
 <p id="section-4-1">The <code>next-hop-aliases</code> parameter does not include any DNSSEC information or imply that DNSSEC was used.
 The information included in the parameter can only be trusted to be valid insofar as the client
-trusts its proxy to provide accurate information. This information is intended to be used as
+trusts the proxy to provide accurate information. This information is intended to be used as
 a hint, and SHOULD NOT be used for making security decisions about the identity of a resource accessed
 through the proxy.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">Inspecting CNAME chains can be used to detect cloaking of trackers or malicious hosts. However, the
+CNAME records could be omitted by a recursive resolver that is trying to hide this form of cloaking.
+Such attacks to avoid cloaking detection apply equally to clients directly performing DNS name
+resolution and proxies performing DNS name resolution on behalf of client. A malicious proxy could
+also choose to not report these CNAME chains in order to hide the cloaking. In general, client can
+trust information included (or not included) in the <code>next-hop-aliases</code> parameter to the degree
+that the proxy and any resolvers used by the proxy are trusted.<a href="#section-4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
