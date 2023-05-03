@@ -4,8 +4,8 @@
 
 HTTP                                                            T. Pauly
 Internet-Draft                                               Apple, Inc.
-Intended status: Standards Track                              1 May 2023
-Expires: 2 November 2023
+Intended status: Standards Track                              3 May 2023
+Expires: 4 November 2023
 
 
             HTTP Proxy-Status Parameter for Next-Hop Aliases
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 November 2023.
+   This Internet-Draft will expire on 4 November 2023.
 
 Copyright Notice
 
@@ -179,9 +179,9 @@ Table of Contents
 
    It is also possible for a DNS name to include a period character
    (".") within a label, instead of as a label separator.  In this case,
-   the period character MUST be first escaped as ".".  Since the ""
+   the period character MUST be first escaped as "\.".  Since the "\"
    character itself will be percent-encoded, the name
-   "dot.label.example.com" would be encoded within a next-hop-aliases
+   "dot\.label.example.com" would be encoded within a next-hop-aliases
    parameter as follows:
 
    Proxy-Status: proxy.example.net; next-hop=2001:db8::1;
@@ -190,9 +190,9 @@ Table of Contents
    Upon parsing this name, "dot%5C.label" MUST be treated as a single
    label.
 
-   Similarly the "" character in a label MUST be escaped as "\".  Other
-   uses of "" MUST NOT appear in the label after percent-decoding. #
-   Implementation Considerations
+   Similarly the "\" character in a label MUST be escaped as "\\".
+   Other uses of "\" MUST NOT appear in the label after percent-
+   decoding. # Implementation Considerations
 
    In order to include the next-hop-aliases parameter, a proxy needs to
    have access to the chain of alias names and canonical names received
