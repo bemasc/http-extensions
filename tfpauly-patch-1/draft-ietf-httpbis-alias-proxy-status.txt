@@ -70,11 +70,12 @@ Table of Contents
      1.1.  Requirements
    2.  next-hop-aliases Parameter
      2.1.  Encoding special characters
-   3.  Security Considerations
-   4.  IANA Considerations
-   5.  References
-     5.1.  Normative References
-     5.2.  Informative References
+   3.  Implementation Considerations
+   4.  Security Considerations
+   5.  IANA Considerations
+   6.  References
+     6.1.  Normative References
+     6.2.  Informative References
    Author's Address
 
 1.  Introduction
@@ -192,7 +193,9 @@ Table of Contents
 
    Similarly the "\" character in a label MUST be escaped as "\\".
    Other uses of "\" MUST NOT appear in the label after percent-
-   decoding. # Implementation Considerations
+   decoding.
+
+3.  Implementation Considerations
 
    In order to include the next-hop-aliases parameter, a proxy needs to
    have access to the chain of alias names and canonical names received
@@ -209,7 +212,7 @@ Table of Contents
    the full chain, such as only including the canonical name if the
    implementation can only use getaddrinfo as described above.
 
-3.  Security Considerations
+4.  Security Considerations
 
    The next-hop-aliases parameter does not include any DNSSEC
    information or imply that DNSSEC was used.  The information included
@@ -219,7 +222,7 @@ Table of Contents
    for making security decisions about the identity of a resource
    accessed through the proxy.
 
-4.  IANA Considerations
+5.  IANA Considerations
 
    This document registers the "next-hop-aliases" parameter in the "HTTP
    Proxy-Status Parameters" registry <https://www.iana.org/assignments/
@@ -233,9 +236,9 @@ Table of Contents
 
    Reference:  This document
 
-5.  References
+6.  References
 
-5.1.  Normative References
+6.1.  Normative References
 
    [CONNECT-UDP]
               Schinazi, D., "Proxying UDP in HTTP", RFC 9298,
@@ -275,7 +278,7 @@ Table of Contents
               HTTP", RFC 8941, DOI 10.17487/RFC8941, February 2021,
               <https://www.rfc-editor.org/rfc/rfc8941>.
 
-5.2.  Informative References
+6.2.  Informative References
 
    [COOKIES]  Barth, A., "HTTP State Management Mechanism", RFC 6265,
               DOI 10.17487/RFC6265, April 2011,
