@@ -660,7 +660,8 @@ sub, sup {
 .references dt {
   text-align: right;
   font-weight: bold;
-  min-width: 7em;
+  min-width: 10ch;
+  margin-right: 1.5ch;
 }
 .references dt:target::before {
   content: "⇒";
@@ -668,7 +669,7 @@ sub, sup {
   margin: 0 10px 0 -25px;
 }
 .references dd {
-  margin-left: 8em !important;
+  margin-left: 12ch !important;
   overflow: auto;
 }
 
@@ -1050,7 +1051,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Pauly</td>
-<td class="center">Expires 4 November 2023</td>
+<td class="center">Expires 11 November 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1063,12 +1064,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-httpbis-alias-proxy-status-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2023-05-03" class="published">3 May 2023</time>
+<time datetime="2023-05-10" class="published">10 May 2023</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-11-04">4 November 2023</time></dd>
+<dd class="expires"><time datetime="2023-11-11">11 November 2023</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1118,7 +1119,7 @@ and canonical names received over DNS when establishing a connection to the next
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 November 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 11 November 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1328,10 +1329,10 @@ trusts the proxy to provide accurate information. This information is intended t
 a hint, and SHOULD NOT be used for making security decisions about the identity of a resource accessed
 through the proxy.<a href="#section-4-1" class="pilcrow">¶</a></p>
 <p id="section-4-2">Inspecting CNAME chains can be used to detect cloaking of trackers or malicious hosts. However, the
-CNAME records could be omitted by a recursive resolver that is trying to hide this form of cloaking.
-Such attacks to avoid cloaking detection apply equally to clients directly performing DNS name
+CNAME records could be omitted by a recursive or authoritative resolver that is trying to hide this form of cloaking.
+In particular, recursive or authoritative resolvers can omit these records for both clients directly performing DNS name
 resolution and proxies performing DNS name resolution on behalf of client. A malicious proxy could
-also choose to not report these CNAME chains in order to hide the cloaking. In general, client can
+also choose to not report these CNAME chains in order to hide the cloaking. In general, clients can
 trust information included (or not included) in the <code>next-hop-aliases</code> parameter to the degree
 that the proxy and any resolvers used by the proxy are trusted.<a href="#section-4-2" class="pilcrow">¶</a></p>
 </section>
